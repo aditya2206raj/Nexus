@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>CivicConnect — Darbhanga Civic Issue Reporting</title>
+<meta name="description" content="Report. Track. Resolve. CivicConnect is a civic-tech platform connecting Darbhanga citizens with faster, more transparent civic services.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+:root{
+  --ink:#0B2436;
+  --blue-950:#081E30;
+  --blue-900:#0B3D5C;
+  --blue-800:#0F4C72;
+  --blue-700:#14608F;
+  --teal-600:#0C9C93;
+  --teal-500:#12B5AB;
+  --teal-100:#E3F7F5;
+  --gray-50:#F5F7F9;
+  --gray-100:#EEF1F4;
+  --gray-200:#E2E7EC;
+  --gray-400:#93A1AF;
+  --gray-500:#6B7C8C;
+  --gray-600:#4C5D6D;
+  --white:#FFFFFF;
+  --green:#178A4C;
+  --green-bg:#E7F6EE;
+  --orange:#D9740A;
+  --orange-bg:#FCEEDC;
+  --red:#C6303E;
+  --red-bg:#FBE7E9;
+  --low:#5B7083;
+  --low-bg:#EEF1F4;
+  --radius:14px;
+  --shadow-sm:0 1px 2px rgba(11,36,54,.06),0 1px 1px rgba(11,36,54,.04);
+  --shadow-md:0 6px 20px rgba(11,36,54,.08),0 2px 6px rgba(11,36,54,.05);
+  --shadow-lg:0 20px 50px rgba(11,36,54,.14),0 6px 16px rgba(11,36,54,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--gray-50);-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,.font-display{font-family:'Manrope',system-ui,sans-serif}
+.font-mono{font-family:'IBM Plex Mono',monospace}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit;cursor:pointer}
+img{max-width:100%;display:block}
+::selection{background:var(--teal-100);color:var(--blue-900)}
+:focus-visible{outline:2px solid var(--teal-600);outline-offset:2px}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.page{display:none}
+.page.active{display:block;animation:fadein .35s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- NAVBAR ---------- */
+#navbar{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--gray-200)}
+.nav-inner{max-width:1180px;margin:0 auto;padding:0 20px;display:flex;align-items:center;height:68px;gap:24px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;color:var(--blue-900);white-space:nowrap}
+.logo .mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(145deg,var(--blue-900),var(--teal-600));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-links{display:flex;gap:6px;margin-left:8px}
+.nav-links a{padding:9px 14px;border-radius:9px;font-size:14.5px;font-weight:600;color:var(--gray-600);transition:.15s}
+.nav-links a:hover{background:var(--gray-100);color:var(--blue-900)}
+.nav-links a.active{color:var(--blue-900);background:var(--teal-100)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nav-support{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--gray-600);font-weight:600;padding:6px 10px;border:1px solid var(--gray-200);border-radius:20px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:14.5px;padding:11px 20px;border-radius:10px;border:none;transition:.15s;white-space:nowrap}
+.btn-primary{background:var(--blue-900);color:#fff;box-shadow:var(--shadow-sm)}
+.btn-primary:hover{background:var(--blue-800);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.btn-teal{background:var(--teal-600);color:#fff}
+.btn-teal:hover{background:var(--teal-500)}
+.btn-outline{background:#fff;color:var(--blue-900);border:1.5px solid var(--gray-200)}
+.btn-outline:hover{border-color:var(--blue-900)}
+.btn-ghost{background:transparent;color:var(--blue-900)}
+.btn-sm{padding:8px 14px;font-size:13.5px;border-radius:8px}
+.btn-call{background:var(--blue-900);color:#fff}
+.btn-call:hover{background:var(--blue-800)}
+.btn-wa{background:#1FA855;color:#fff}
+.btn-wa:hover{background:#189146}
+.hamburger{display:none;background:none;border:none;padding:8px;color:var(--blue-900)}
+.mobile-menu{display:none;position:fixed;inset:68px 0 0 0;background:#fff;z-index:59;padding:20px;overflow-y:auto}
+.mobile-menu.open{display:block}
+.mobile-menu a{display:block;padding:14px 6px;font-weight:700;font-size:17px;color:var(--blue-900);border-bottom:1px solid var(--gray-100)}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#0B3D5C 0%,#0C4568 55%,#0E5878 100%)}
+.blueprint{position:absolute;inset:0;opacity:.15;background-image:linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px);background-size:42px 42px;-webkit-mask-image:radial-gradient(ellipse at 70% 30%,#000 0%,transparent 70%)}
+.hero-inner{position:relative;max-width:1180px;margin:0 auto;padding:74px 20px 90px;display:grid;grid-template-columns:1.1fr .9fr;gap:50px;align-items:center}
+.badge-loc{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);color:#DCEFF2;border:1px solid rgba(255,255,255,.22);padding:6px 14px;border-radius:30px;font-size:13px;font-weight:600;margin-bottom:22px}
+.hero h1{font-size:44px;line-height:1.12;color:#fff;font-weight:800;margin:0 0 18px;letter-spacing:-.5px}
+.hero p{color:#C7DCE3;font-size:16.5px;line-height:1.65;max-width:520px;margin:0 0 30px}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap}
+.hero-visual{position:relative}
+.hv-card{background:#fff;border-radius:18px;box-shadow:var(--shadow-lg);padding:20px;transform:rotate(-2deg)}
+.hv-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.hv-dot{width:9px;height:9px;border-radius:50%}
+.hv-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--gray-50);margin-bottom:8px}
+.hv-float{position:absolute;background:#fff;border-radius:14px;box-shadow:var(--shadow-lg);padding:12px 16px}
+
+/* ---------- SECTIONS ---------- */
+.section{padding:74px 0}
+.section-tight{padding:56px 0}
+.eyebrow{color:var(--teal-600);font-weight:700;font-size:12.5px;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:10px;display:block}
+.section-head{max-width:640px;margin:0 auto 44px;text-align:center}
+.section-head h2{font-size:32px;font-weight:800;margin:0 0 12px;letter-spacing:-.3px;color:var(--blue-950)}
+.section-head p{color:var(--gray-600);font-size:15.5px;line-height:1.6;margin:0}
+.bg-alt{background:#fff;border-top:1px solid var(--gray-200);border-bottom:1px solid var(--gray-200)}
+
+/* stats */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:-56px;position:relative;z-index:5}
+.stat-card{background:#fff;border-radius:16px;box-shadow:var(--shadow-lg);padding:24px 20px;text-align:center}
+.stat-num{font-family:'Manrope';font-weight:800;font-size:30px;color:var(--blue-900)}
+.stat-label{color:var(--gray-500);font-size:13px;font-weight:600;margin-top:4px}
+.stat-demo{font-size:11px;color:var(--gray-400);margin-top:8px;font-style:italic}
+
+/* rail / signature timeline */
+.rail-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+.rail-line{position:absolute;top:23px;left:12%;right:12%;height:2px;background:repeating-linear-gradient(90deg,var(--gray-200) 0 8px,transparent 8px 14px)}
+.rail-step{position:relative;text-align:center;padding:0 12px}
+.rail-node{width:46px;height:46px;border-radius:50%;background:#fff;border:2px solid var(--teal-600);color:var(--teal-600);display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'Manrope';margin:0 auto 18px;position:relative;z-index:2;font-size:16px}
+.rail-step h4{font-size:15.5px;margin:0 0 6px;font-weight:700;color:var(--blue-950)}
+.rail-step p{font-size:13px;color:var(--gray-500);margin:0;line-height:1.5}
+
+/* category cards */
+.cat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.cat-card{background:#fff;border:1px solid var(--gray-200);border-radius:14px;padding:20px 16px;cursor:pointer;transition:.15s}
+.cat-card:hover{border-color:var(--teal-500);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.cat-ic{font-size:26px;margin-bottom:10px}
+.cat-card h4{font-size:14.5px;margin:0 0 4px;font-weight:700}
+.cat-card p{font-size:12px;color:var(--gray-500);margin:0;line-height:1.4}
+
+/* support card */
+.support-card{background:linear-gradient(135deg,var(--blue-900),var(--blue-800));border-radius:20px;padding:36px;color:#fff;display:grid;grid-template-columns:1.3fr auto;gap:24px;align-items:center}
+.support-card h3{font-size:23px;margin:0 0 8px;font-weight:800}
+.support-card p{color:#C7DCE3;font-size:14.5px;margin:0 0 4px;line-height:1.55}
+.support-nums{display:flex;gap:18px;margin-top:14px;flex-wrap:wrap}
+.support-nums div{font-size:13px;color:#B9D3DA}
+.support-nums b{display:block;color:#fff;font-family:'IBM Plex Mono';font-size:15px}
+.support-btns{display:flex;flex-direction:column;gap:10px;min-width:190px}
+.disclaimer{font-size:11.5px;color:var(--gray-400);margin-top:14px;line-height:1.5}
+
+/* trust */
+.trust-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.trust-card{background:#fff;border:1px solid var(--gray-200);border-radius:14px;padding:22px}
+.trust-ic{width:38px;height:38px;border-radius:10px;background:var(--teal-100);color:var(--teal-600);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.trust-card h4{font-size:15px;margin:0 0 6px;font-weight:700}
+.trust-card p{font-size:13px;color:var(--gray-500);margin:0;line-height:1.5}
+
+/* recent complaints */
+.recent-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.rc-card{background:#fff;border:1px solid var(--gray-200);border-radius:14px;padding:18px;cursor:pointer;transition:.15s}
+.rc-card:hover{box-shadow:var(--shadow-md);border-color:var(--teal-500)}
+.rc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.rc-card h4{font-size:14.5px;margin:0 0 4px;font-weight:700;line-height:1.35}
+.rc-card .loc{font-size:12px;color:var(--gray-500)}
+
+/* badges */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.b-critical{background:var(--red-bg);color:var(--red)}
+.b-high{background:var(--orange-bg);color:var(--orange)}
+.b-medium{background:#FEF6E0;color:#A9740A}
+.b-low{background:var(--low-bg);color:var(--low)}
+.b-resolved,.b-closed{background:var(--green-bg);color:var(--green)}
+.b-inprogress{background:#E4EEFB;color:var(--blue-700)}
+.b-assigned{background:#EFE9FB;color:#6B3FBF}
+.b-verified{background:var(--teal-100);color:var(--teal-600)}
+.b-reported{background:var(--gray-100);color:var(--gray-600)}
+
+/* map hotspot */
+.map-wrap{background:#fff;border:1px solid var(--gray-200);border-radius:18px;padding:28px;display:grid;grid-template-columns:1fr 220px;gap:24px}
+.map-svg-wrap{background:var(--gray-50);border-radius:14px;padding:10px;position:relative}
+.map-legend{display:flex;flex-direction:column;gap:12px;justify-content:center}
+.leg-item{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:600;color:var(--gray-600)}
+.leg-dot{width:11px;height:11px;border-radius:50%}
+
+/* footer */
+footer{background:var(--blue-950);color:#B9CBD4;padding:56px 0 26px}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.1fr;gap:34px}
+footer h4{color:#fff;font-size:14px;margin:0 0 14px}
+footer a{display:block;color:#9FB6C0;font-size:13.5px;margin-bottom:10px;transition:.15s}
+footer a:hover{color:#fff}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.1);margin-top:36px;padding-top:20px;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:#7F97A2;flex-wrap:wrap;gap:10px}
+.foot-tag{background:rgba(255,255,255,.08);padding:3px 10px;border-radius:20px;font-size:11px}
+
+/* ---------- FORM / REPORT PAGE ---------- */
+.page-header{background:var(--blue-900);padding:44px 0 34px;color:#fff}
+.page-header h1{font-size:28px;font-weight:800;margin:0 0 8px}
+.page-header p{color:#C7DCE3;font-size:14.5px;margin:0}
+.form-shell{max-width:760px;margin:0 auto;padding:36px 0 70px}
+.step-tracker{display:flex;justify-content:space-between;margin-bottom:34px;position:relative}
+.step-tracker::before{content:'';position:absolute;top:16px;left:16px;right:16px;height:2px;background:var(--gray-200)}
+.step-fill{position:absolute;top:16px;left:16px;height:2px;background:var(--teal-600);transition:width .3s}
+.step-dot{width:32px;height:32px;border-radius:50%;background:#fff;border:2px solid var(--gray-300,#D5DCE2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--gray-400);position:relative;z-index:2}
+.step-dot.done{background:var(--teal-600);border-color:var(--teal-600);color:#fff}
+.step-dot.current{border-color:var(--blue-900);color:var(--blue-900)}
+.step-col{text-align:center;flex:1}
+.step-col span{display:block;margin-top:8px;font-size:11px;font-weight:600;color:var(--gray-500)}
+.card{background:#fff;border:1px solid var(--gray-200);border-radius:16px;padding:28px;box-shadow:var(--shadow-sm)}
+.card h3{font-size:18px;margin:0 0 20px;font-weight:800;color:var(--blue-950)}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13.5px;font-weight:700;margin-bottom:7px;color:var(--blue-950)}
+.field .hint{font-size:12px;color:var(--gray-500);margin-top:5px}
+input[type=text],input[type=tel],textarea,select{width:100%;padding:12px 14px;border:1.5px solid var(--gray-200);border-radius:10px;font-family:inherit;font-size:14.5px;color:var(--ink);background:#fff;transition:.15s}
+input:focus,textarea:focus,select:focus{border-color:var(--teal-600)}
+textarea{resize:vertical;min-height:110px}
+.char-count{text-align:right;font-size:11.5px;color:var(--gray-400);margin-top:4px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cat-select-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.cat-opt{border:1.5px solid var(--gray-200);border-radius:12px;padding:16px 10px;text-align:center;cursor:pointer;transition:.15s}
+.cat-opt:hover{border-color:var(--teal-500)}
+.cat-opt.selected{border-color:var(--teal-600);background:var(--teal-100)}
+.cat-opt .ic{font-size:22px;margin-bottom:6px}
+.cat-opt span{font-size:12px;font-weight:700}
+.upload-box{border:2px dashed var(--gray-200);border-radius:14px;padding:30px;text-align:center;cursor:pointer;transition:.15s}
+.upload-box:hover{border-color:var(--teal-500);background:var(--teal-100)}
+.preview-img{width:100%;max-height:260px;object-fit:cover;border-radius:12px;margin-top:14px}
+.priority-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.pri-opt{border:1.5px solid var(--gray-200);border-radius:12px;padding:14px 10px;cursor:pointer;text-align:center;transition:.15s}
+.pri-opt.selected{border-width:2px}
+.pri-opt[data-p=Low].selected{border-color:var(--low);background:var(--low-bg)}
+.pri-opt[data-p=Medium].selected{border-color:#A9740A;background:#FEF6E0}
+.pri-opt[data-p=High].selected{border-color:var(--orange);background:var(--orange-bg)}
+.pri-opt[data-p=Critical].selected{border-color:var(--red);background:var(--red-bg)}
+.pri-opt b{display:block;font-size:13.5px;margin-bottom:4px}
+.pri-opt span{font-size:11px;color:var(--gray-500);line-height:1.4}
+.form-nav{display:flex;justify-content:space-between;margin-top:24px}
+.loc-preview{display:flex;align-items:center;gap:8px;background:var(--teal-100);color:var(--blue-900);padding:12px 16px;border-radius:10px;font-size:13.5px;font-weight:600;margin-top:16px}
+.error-text{color:var(--red);font-size:12px;margin-top:5px;display:none;font-weight:600}
+.field.invalid input,.field.invalid textarea,.field.invalid select{border-color:var(--red)}
+.field.invalid .error-text{display:block}
+
+/* success screen */
+.success-wrap{text-align:center;padding:20px 0}
+.success-icon{width:70px;height:70px;border-radius:50%;background:var(--green-bg);color:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:34px}
+.id-pill{display:inline-block;background:var(--blue-950);color:#fff;font-family:'IBM Plex Mono';font-weight:600;padding:12px 24px;border-radius:10px;font-size:18px;letter-spacing:.5px;margin:14px 0 22px}
+.summary-list{text-align:left;max-width:420px;margin:0 auto 26px;background:var(--gray-50);border-radius:12px;padding:6px 20px}
+.summary-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--gray-200);font-size:13.5px}
+.summary-row:last-child{border-bottom:none}
+.summary-row span:first-child{color:var(--gray-500);font-weight:600}
+.summary-row span:last-child{font-weight:700;text-align:right}
+.success-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+
+/* ---------- TRACK PAGE ---------- */
+.track-search{max-width:560px;margin:0 auto;display:flex;gap:10px}
+.track-search input{flex:1}
+.track-result{max-width:720px;margin:34px auto 0}
+.empty-state{text-align:center;padding:50px 20px;color:var(--gray-500)}
+.empty-state .ic{font-size:38px;margin-bottom:12px}
+
+.timeline-h{display:flex;position:relative;margin:36px 0}
+.timeline-h::before{content:'';position:absolute;top:19px;left:5%;right:5%;height:2px;background:var(--gray-200)}
+.tl-node{flex:1;text-align:center;position:relative}
+.tl-dot{width:38px;height:38px;border-radius:50%;background:#fff;border:2px solid var(--gray-300,#D5DCE2);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;position:relative;z-index:2;font-size:15px}
+.tl-dot.done{background:var(--teal-600);border-color:var(--teal-600);color:#fff}
+.tl-dot.current{background:var(--blue-900);border-color:var(--blue-900);color:#fff}
+.tl-node h5{font-size:12.5px;font-weight:700;margin:0 0 3px}
+.tl-node small{display:block;font-size:10.5px;color:var(--gray-500);line-height:1.4}
+.timeline-v{display:none}
+
+/* ---------- DASHBOARD ---------- */
+.dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:30px}
+.dstat{background:#fff;border:1px solid var(--gray-200);border-radius:14px;padding:18px}
+.dstat .n{font-family:'Manrope';font-weight:800;font-size:24px;color:var(--blue-900)}
+.dstat .l{font-size:12px;color:var(--gray-500);font-weight:600;margin-top:2px}
+.filters-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;align-items:center;background:#fff;border:1px solid var(--gray-200);padding:14px;border-radius:12px}
+.filters-bar select,.filters-bar input{width:auto;padding:9px 12px;font-size:13.5px}
+.filters-bar input{flex:1;min-width:180px}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden}
+thead th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-500);padding:12px 14px;background:var(--gray-50);border-bottom:1px solid var(--gray-200)}
+tbody td{padding:13px 14px;font-size:13.5px;border-bottom:1px solid var(--gray-100)}
+tbody tr{cursor:pointer;transition:.1s}
+tbody tr:hover{background:var(--teal-100)}
+.table-wrap{overflow-x:auto;border:1px solid var(--gray-200);border-radius:14px}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:30px}
+.chart-card{background:#fff;border:1px solid var(--gray-200);border-radius:14px;padding:20px}
+.chart-card h4{font-size:14.5px;margin:0 0 14px;font-weight:700}
+.chart-card canvas{max-height:230px}
+.mobile-cards{display:none}
+.mc-card{background:#fff;border:1px solid var(--gray-200);border-radius:12px;padding:14px;margin-bottom:10px}
+.mc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.mc-id{font-family:'IBM Plex Mono';font-size:12px;font-weight:600;color:var(--gray-500)}
+.demo-tag{display:inline-flex;align-items:center;gap:6px;background:#FEF6E0;color:#8A5A00;padding:5px 12px;border-radius:20px;font-size:11.5px;font-weight:700;margin-bottom:14px}
+
+/* ---------- DETAILS ---------- */
+.details-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:22px;align-items:start}
+.dt-section{margin-bottom:22px}
+.dt-section h4{font-size:12.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--gray-500);margin:0 0 8px;font-weight:700}
+.dt-section p{margin:0;font-size:14.5px;line-height:1.6}
+.kv{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--gray-100);font-size:13.5px}
+.kv span:first-child{color:var(--gray-500);font-weight:600}
+.kv span:last-child{font-weight:700}
+.actions-panel{position:sticky;top:88px}
+.res-proof-imgs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.res-proof-imgs img{border-radius:10px;height:110px;object-fit:cover}
+
+/* toast */
+#toast-host{position:fixed;top:84px;right:20px;z-index:200;display:flex;flex-direction:column;gap:10px}
+.toast{background:var(--blue-950);color:#fff;padding:13px 18px;border-radius:10px;font-size:13.5px;font-weight:600;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;animation:slidein .25s ease;max-width:320px}
+@keyframes slidein{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+
+/* floating buttons */
+.fab-wrap{position:fixed;bottom:24px;right:20px;z-index:70;display:flex;flex-direction:column;gap:10px;align-items:flex-end}
+.fab{display:flex;align-items:center;gap:8px;border-radius:30px;padding:12px 18px;font-weight:700;font-size:13.5px;box-shadow:var(--shadow-lg);color:#fff}
+.fab-call{background:var(--blue-900)}
+.fab-wa{background:#1FA855}
+
+/* sticky mobile report btn */
+.sticky-report{display:none}
+
+/* about page */
+.about-hero{background:linear-gradient(135deg,var(--blue-900),var(--teal-600));color:#fff;padding:56px 0;text-align:center}
+.about-hero h1{font-size:30px;font-weight:800;margin:0 0 10px}
+.about-hero p{color:#DCEFF2;max-width:560px;margin:0 auto;font-size:14.5px;line-height:1.6}
+.about-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:10px}
+.about-card{background:#fff;border:1px solid var(--gray-200);border-radius:14px;padding:22px}
+.about-card h4{margin:0 0 8px;font-size:15px}
+.about-card p{margin:0;font-size:13px;color:var(--gray-600);line-height:1.6}
+
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(8,30,48,.55);z-index:150;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:16px;padding:26px;max-width:420px;width:100%;box-shadow:var(--shadow-lg)}
+.modal h3{margin:0 0 8px;font-size:17px}
+.modal p{margin:0 0 18px;font-size:13.5px;color:var(--gray-600);line-height:1.5}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:980px){
+  .hero-inner{grid-template-columns:1fr;padding:44px 20px 64px}
+  .hero-visual{display:none}
+  .hero h1{font-size:32px}
+  .stats-grid{grid-template-columns:repeat(2,1fr);margin-top:20px}
+  .cat-grid{grid-template-columns:repeat(2,1fr)}
+  .trust-grid{grid-template-columns:repeat(2,1fr)}
+  .recent-grid{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr 1fr}
+  .rail-steps{grid-template-columns:1fr 1fr;row-gap:26px}
+  .rail-line{display:none}
+  .support-card{grid-template-columns:1fr}
+  .details-grid{grid-template-columns:1fr}
+  .charts-grid{grid-template-columns:1fr}
+  .dash-stats{grid-template-columns:1fr 1fr}
+  .cat-select-grid{grid-template-columns:repeat(2,1fr)}
+  .priority-grid{grid-template-columns:repeat(2,1fr)}
+  .map-wrap{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .nav-links{display:none}
+  .nav-support{display:none}
+  .hamburger{display:block}
+  .btn-primary.nav-cta{display:none}
+  table{display:none}
+  .table-wrap{border:none}
+  .mobile-cards{display:block}
+  .grid-2{grid-template-columns:1fr}
+  .timeline-h{display:none}
+  .timeline-v{display:block}
+  .timeline-v .tl-node{display:flex;gap:14px;text-align:left;margin-bottom:22px;padding-left:4px}
+  .timeline-v .tl-dot{margin:0}
+  .timeline-v::before{content:'';position:absolute}
+  .sticky-report{display:block;position:fixed;bottom:0;left:0;right:0;z-index:65;background:#fff;padding:12px 16px calc(12px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(11,36,54,.1)}
+  .sticky-report .btn{width:100%}
+  body{padding-bottom:76px}
+  .fab{padding:14px 16px;font-size:0}
+  .fab .fab-txt{display:none}
+  .fab-wrap{bottom:92px}
+  .support-nums{flex-direction:column;gap:8px}
+  .about-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#home" class="logo" onclick="go('home')">
+      <span class="mark">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v6c0 5 4 9 9 9s9-4 9-9V7l-9-5z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      CivicConnect
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="#home" data-page="home" onclick="go('home')">Home</a>
+      <a href="#report" data-page="report" onclick="go('report')">Report Issue</a>
+      <a href="#track" data-page="track" onclick="go('track')">Track Complaint</a>
+      <a href="#dashboard" data-page="dashboard" onclick="go('dashboard')">Authority Dashboard</a>
+      <a href="#about" data-page="about" onclick="go('about')">About</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-support">📞 Complaint: 7488699669 <a href="https://wa.me/918406940095?text=Hello%20CivicConnect%2C%20I%20want%20to%20report%20a%20civic%20issue%20in%20Darbhanga." target="_blank" style="color:#1FA855;font-weight:700">WhatsApp</a></div>
+      <button class="btn btn-primary nav-cta" onclick="go('report')">Report an Issue</button>
+      <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#home" onclick="go('home')">Home</a>
+  <a href="#report" onclick="go('report')">Report Issue</a>
+  <a href="#track" onclick="go('track')">Track Complaint</a>
+  <a href="#dashboard" onclick="go('dashboard')">Authority Dashboard</a>
+  <a href="#about" onclick="go('about')">About</a>
+  <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px">
+    <a class="btn btn-call" href="tel:7488699669">📞 Call for Complaint — 7488699669</a>
+    <a class="btn btn-wa" target="_blank" href="https://wa.me/918406940095?text=Hello%20CivicConnect%2C%20I%20want%20to%20report%20a%20civic%20issue%20in%20Darbhanga.">💬 WhatsApp Complaint</a>
+  </div>
+</div>
+
+<div id="toast-host"></div>
+<div class="modal-bg" id="modal-bg"><div class="modal" id="modal-content"></div></div>
+
+<!-- ================= HOME PAGE ================= -->
+<section class="page active" id="page-home">
+  <div class="hero">
+    <div class="blueprint"></div>
+    <div class="hero-inner">
+      <div>
+        <span class="badge-loc">📍 Darbhanga, Bihar</span>
+        <h1>Make Darbhanga Better,<br>One Complaint at a Time.</h1>
+        <p>Report potholes, broken streetlights, garbage, water leaks and other civic issues. Track your complaint and stay informed until the issue is resolved.</p>
+        <div class="hero-ctas">
+          <button class="btn btn-teal" onclick="go('report')">Report an Issue</button>
+          <button class="btn btn-outline" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)" onclick="go('track')">Track Complaint</button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hv-card">
+          <div class="hv-top">
+            <b style="font-size:13px;color:var(--blue-900)">Live Complaint Feed</b>
+            <span style="font-size:11px;color:var(--gray-400)">Darbhanga</span>
+          </div>
+          <div class="hv-row"><span class="hv-dot" style="background:var(--orange)"></span><span style="font-size:12.5px;flex:1">Pothole — Tower Chowk</span><span class="badge b-inprogress">In Progress</span></div>
+          <div class="hv-row"><span class="hv-dot" style="background:var(--green)"></span><span style="font-size:12.5px;flex:1">Garbage — Station Road</span><span class="badge b-resolved">Resolved</span></div>
+          <div class="hv-row"><span class="hv-dot" style="background:#6B3FBF"></span><span style="font-size:12.5px;flex:1">Streetlight — Kadirabad</span><span class="badge b-assigned">Assigned</span></div>
+        </div>
+        <div class="hv-float" style="top:-22px;right:-10px">
+          <div style="font-family:'Manrope';font-weight:800;font-size:20px;color:var(--teal-600)">75%</div>
+          <div style="font-size:11px;color:var(--gray-500);font-weight:600">Resolution Rate</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="stats-grid" id="home-stats"></div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">The Process</span>
+        <h2>How CivicConnect Works</h2>
+        <p>A simple four-stop route from spotting a problem to seeing it fixed — tracked the whole way.</p>
+      </div>
+      <div class="rail-steps">
+        <div class="rail-line"></div>
+        <div class="rail-step"><div class="rail-node">1</div><h4>Spot an Issue</h4><p>Citizen notices a public problem.</p></div>
+        <div class="rail-step"><div class="rail-node">2</div><h4>Report It</h4><p>Upload a photo, describe the problem and provide the location.</p></div>
+        <div class="rail-step"><div class="rail-node">3</div><h4>Track Progress</h4><p>Use the complaint ID to monitor status.</p></div>
+        <div class="rail-step"><div class="rail-node">4</div><h4>Get It Resolved</h4><p>Authorities update the complaint until resolution.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div class="section section-tight bg-alt">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">What You Can Report</span>
+        <h2>Issue Categories</h2>
+        <p>CivicConnect covers the everyday civic problems that affect Darbhanga's streets and neighbourhoods.</p>
+      </div>
+      <div class="cat-grid" id="home-categories"></div>
+    </div>
+  </div>
+
+  <!-- MAP HOTSPOTS -->
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">City Overview</span>
+        <h2>Issue Hotspots in Darbhanga</h2>
+        <p>A demonstration view of where reported issues cluster across the city.</p>
+      </div>
+      <div class="map-wrap">
+        <div class="map-svg-wrap" id="hotspot-map"></div>
+        <div class="map-legend">
+          <div class="leg-item"><span class="leg-dot" style="background:var(--red)"></span>Critical</div>
+          <div class="leg-item"><span class="leg-dot" style="background:var(--orange)"></span>High</div>
+          <div class="leg-item"><span class="leg-dot" style="background:#D4A017"></span>Medium</div>
+          <div class="leg-item"><span class="leg-dot" style="background:var(--low)"></span>Low</div>
+          <p style="font-size:11.5px;color:var(--gray-400);margin-top:6px;line-height:1.5">Stylized map for demonstration purposes only — not to scale.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRANSPARENCY -->
+  <div class="section section-tight bg-alt">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Full Visibility</span>
+        <h2>Where Your Complaint Stands</h2>
+        <p>Every complaint moves through the same six checkpoints, so you always know what's happening.</p>
+      </div>
+      <div class="trust-grid">
+        <div class="trust-card"><div class="trust-ic">1</div><h4>Reported</h4><p>Submitted by the citizen with evidence and location.</p></div>
+        <div class="trust-card"><div class="trust-ic">2</div><h4>Verified</h4><p>Reviewed and confirmed by an authority.</p></div>
+        <div class="trust-card"><div class="trust-ic">3</div><h4>Assigned</h4><p>Routed to the responsible department.</p></div>
+        <div class="trust-card"><div class="trust-ic">4</div><h4>Resolved</h4><p>Work completed and proof recorded.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECENT COMPLAINTS -->
+  <div class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">From The Feed</span>
+        <h2>Recent Complaints</h2>
+        <p>Anonymized recent reports from citizens across Darbhanga.</p>
+      </div>
+      <div class="recent-grid" id="home-recent"></div>
+    </div>
+  </div>
+
+  <!-- TRUST -->
+  <div class="section section-tight bg-alt">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Why CivicConnect</span>
+        <h2>Trust &amp; Transparency</h2>
+      </div>
+      <div class="trust-grid">
+        <div class="trust-card"><div class="trust-ic">✓</div><h4>Transparent Tracking</h4><p>Citizens always know the current complaint status.</p></div>
+        <div class="trust-card"><div class="trust-ic">📷</div><h4>Evidence Based</h4><p>Photo and location help authorities verify issues.</p></div>
+        <div class="trust-card"><div class="trust-ic">⚑</div><h4>Priority Driven</h4><p>Urgent public safety issues can be prioritized.</p></div>
+        <div class="trust-card"><div class="trust-ic">🔒</div><h4>Accountability</h4><p>Every status update is recorded in the complaint timeline.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUPPORT CARD -->
+  <div class="section">
+    <div class="wrap">
+      <div class="support-card">
+        <div>
+          <h3>Need Help With Your Complaint?</h3>
+          <p>Can't submit an issue or having trouble tracking your complaint? Our support team is here to help.</p>
+          <div class="support-nums">
+            <div>Call us<b>7488699669</b></div>
+            <div>WhatsApp<b>8406940095</b></div>
+          </div>
+          <p class="disclaimer">CivicConnect is a hackathon prototype and these contact numbers are provided for demonstration/support purposes. It is not an official government helpline.</p>
+        </div>
+        <div class="support-btns">
+          <a class="btn btn-call" href="tel:7488699669">📞 Call for Complaint</a>
+          <a class="btn btn-wa" target="_blank" href="https://wa.me/918406940095?text=Hello%20CivicConnect%2C%20I%20want%20to%20report%20a%20civic%20issue%20in%20Darbhanga.">💬 WhatsApp Complaint</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= REPORT ISSUE PAGE ================= -->
+<section class="page" id="page-report">
+  <div class="page-header"><div class="wrap"><h1>Report a Civic Issue</h1><p>It takes less than two minutes. Add a photo and location so authorities can act quickly.</p></div></div>
+  <div class="wrap">
+    <div class="form-shell">
+      <div class="step-tracker">
+        <div class="step-fill" id="step-fill" style="width:0%"></div>
+        <div class="step-col"><div class="step-dot" id="sd-1">1</div><span>Category</span></div>
+        <div class="step-col"><div class="step-dot" id="sd-2">2</div><span>Describe</span></div>
+        <div class="step-col"><div class="step-dot" id="sd-3">3</div><span>Evidence</span></div>
+        <div class="step-col"><div class="step-dot" id="sd-4">4</div><span>Location</span></div>
+        <div class="step-col"><div class="step-dot" id="sd-5">5</div><span>Priority</span></div>
+      </div>
+
+      <div class="card" id="report-form-card">
+        <!-- STEP 1 -->
+        <div class="report-step" id="rstep-1">
+          <h3>Select a Category</h3>
+          <div class="cat-select-grid" id="cat-select-grid"></div>
+          <div class="error-text" id="err-category" style="display:none;margin-top:10px">Please select a category to continue.</div>
+        </div>
+        <!-- STEP 2 -->
+        <div class="report-step" id="rstep-2" style="display:none">
+          <h3>Describe the Issue</h3>
+          <div class="field" id="field-title">
+            <label>Issue Title</label>
+            <input type="text" id="in-title" placeholder="e.g. Large pothole near Laheriasarai" maxlength="80">
+            <div class="error-text">Please give your complaint a short title.</div>
+          </div>
+          <div class="field" id="field-desc">
+            <label>Description</label>
+            <textarea id="in-desc" maxlength="500" placeholder="Describe the issue, how long it has been there and how it affects the public..." oninput="updateCharCount()"></textarea>
+            <div class="char-count"><span id="char-count">0</span>/500</div>
+            <div class="error-text">Please add a short description (min 15 characters).</div>
+          </div>
+        </div>
+        <!-- STEP 3 -->
+        <div class="report-step" id="rstep-3" style="display:none">
+          <h3>Upload Evidence</h3>
+          <div class="upload-box" id="upload-box" onclick="document.getElementById('file-input').click()">
+            <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+            <div id="upload-placeholder">
+              <div style="font-size:30px;margin-bottom:8px">📷</div>
+              <b style="font-size:14px">Click to upload a photo</b>
+              <div style="font-size:12px;color:var(--gray-500);margin-top:4px">JPG or PNG, evidence of the civic issue</div>
+            </div>
+            <img id="preview-img" class="preview-img" style="display:none">
+          </div>
+          <div class="hint">No photo? A placeholder will be used, but photos help authorities verify issues faster.</div>
+        </div>
+        <!-- STEP 4 -->
+        <div class="report-step" id="rstep-4" style="display:none">
+          <h3>Location Details</h3>
+          <div class="grid-2">
+            <div class="field" id="field-area"><label>Area</label><input type="text" id="in-area" placeholder="e.g. Laheriasarai"><div class="error-text">Please enter the area.</div></div>
+            <div class="field"><label>Landmark <span style="color:var(--gray-400);font-weight:500">(optional)</span></label><input type="text" id="in-landmark" placeholder="e.g. Near SBI Branch"></div>
+          </div>
+          <div class="field" id="field-address"><label>Full Address</label><input type="text" id="in-address" placeholder="House / street / road name"><div class="error-text">Please enter the full address.</div></div>
+          <div class="field"><label>Pincode <span style="color:var(--gray-400);font-weight:500">(optional)</span></label><input type="text" id="in-pincode" placeholder="846004" maxlength="6"></div>
+          <div class="loc-preview" id="loc-preview">📍 Darbhanga, Bihar</div>
+          <div style="margin-top:14px;background:var(--gray-50);border-radius:12px;padding:16px;font-size:12px;color:var(--gray-500)">🗺️ Map preview unavailable in this prototype — location is recorded as text instead of GPS coordinates.</div>
+        </div>
+        <!-- STEP 5 -->
+        <div class="report-step" id="rstep-5" style="display:none">
+          <h3>Set Priority</h3>
+          <div class="priority-grid" id="priority-grid">
+            <div class="pri-opt" data-p="Low" onclick="selectPriority('Low')"><b>Low</b><span>Minor inconvenience</span></div>
+            <div class="pri-opt" data-p="Medium" onclick="selectPriority('Medium')"><b>Medium</b><span>Needs attention</span></div>
+            <div class="pri-opt" data-p="High" onclick="selectPriority('High')"><b>High</b><span>Significant public impact</span></div>
+            <div class="pri-opt" data-p="Critical" onclick="selectPriority('Critical')"><b>Critical</b><span>Immediate attention required</span></div>
+          </div>
+          <div class="error-text" id="err-priority" style="display:none;margin-top:10px">Please select a priority level.</div>
+        </div>
+
+        <div class="form-nav">
+          <button class="btn btn-outline" id="btn-back" onclick="reportBack()" style="visibility:hidden">Back</button>
+          <button class="btn btn-primary" id="btn-next" onclick="reportNext()">Continue</button>
+        </div>
+      </div>
+
+      <!-- SUCCESS SCREEN -->
+      <div class="card success-wrap" id="report-success" style="display:none">
+        <div class="success-icon">✓</div>
+        <h3 style="font-size:22px;margin:0">Complaint Submitted Successfully</h3>
+        <p style="color:var(--gray-500);font-size:14px">Your complaint has been registered.</p>
+        <div class="id-pill" id="success-id"></div>
+        <div class="summary-list" id="success-summary"></div>
+        <p style="font-size:13px;color:var(--gray-500);margin-bottom:14px">If you need assistance regarding this complaint:<br>📞 Call: 7488699669 &nbsp;·&nbsp; 💬 WhatsApp: 8406940095</p>
+        <div class="success-actions">
+          <button class="btn btn-primary" onclick="goTrackWithId()">Track Complaint</button>
+          <button class="btn btn-outline" onclick="resetReportForm()">Report Another Issue</button>
+        </div>
+        <div class="success-actions" style="margin-top:10px">
+          <a class="btn btn-call btn-sm" href="tel:7488699669">Call Support</a>
+          <a class="btn btn-wa btn-sm" target="_blank" href="https://wa.me/918406940095?text=Hello%20CivicConnect%2C%20I%20want%20to%20report%20a%20civic%20issue%20in%20Darbhanga.">WhatsApp Support</a>
+        </div>
+      </div>
+
+      <!-- ASSISTANCE -->
+      <div class="card" style="margin-top:20px">
+        <h3 style="font-size:15px">Need Assistance?</h3>
+        <p style="font-size:13px;color:var(--gray-600);margin:-10px 0 16px">If you are unable to submit your complaint online, contact CivicConnect support.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <a class="btn btn-call btn-sm" href="tel:7488699669">📞 7488699669 — Call</a>
+          <a class="btn btn-wa btn-sm" target="_blank" href="https://wa.me/918406940095?text=Hello%20CivicConnect%2C%20I%20want%20to%20report%20a%20civic%20issue%20in%20Darbhanga.">💬 8406940095 — WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sticky-report"><button class="btn btn-primary" onclick="document.getElementById('report-form-card').scrollIntoView({behavior:'smooth'})">Continue Report</button></div>
+</section>
+
+<!-- ================= TRACK COMPLAINT PAGE ================= -->
+<section class="page" id="page-track">
+  <div class="page-header"><div class="wrap"><h1>Track Your Complaint</h1><p>Enter your complaint ID to see live status and timeline.</p></div></div>
+  <div class="wrap">
+    <div style="max-width:560px;margin:36px auto 0">
+      <div class="track-search">
+        <input type="text" id="track-input" placeholder='Enter Complaint ID e.g. "CC-DAR-2026-1001"' onkeydown="if(event.key==='Enter')trackComplaint()">
+        <button class="btn btn-primary" onclick="trackComplaint()">Track Complaint</button>
+      </div>
+      <div class="error-text" id="track-error" style="display:none;text-align:center;margin-top:10px">No complaint found with that ID. Please check and try again.</div>
+    </div>
+
+    <div class="track-result" id="track-result"></div>
+
+    <div class="card" style="max-width:720px;margin:36px auto 0">
+      <h3 style="font-size:15px">Can't Find Your Complaint?</h3>
+      <p style="font-size:13px;color:var(--gray-600);margin:-10px 0 16px">If you are having difficulty tracking your complaint, contact support.<br>Call for Complaint: 7488699669 &nbsp;·&nbsp; WhatsApp Support: 8406940095</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn btn-call btn-sm" href="tel:7488699669">Call Now</a>
+        <a class="btn btn-wa btn-sm" target="_blank" href="https://wa.me/918406940095?text=Hello%20CivicConnect%2C%20I%20want%20to%20report%20a%20civic%20issue%20in%20Darbhanga.">Chat on WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= AUTHORITY DASHBOARD ================= -->
+<section class="page" id="page-dashboard">
+  <div class="page-header"><div class="wrap"><h1>Authority Dashboard</h1><p>Review, prioritize, assign and resolve civic complaints across Darbhanga.</p></div></div>
+  <div class="wrap" style="padding-top:30px;padding-bottom:70px">
+    <div class="demo-tag">🛡️ Authority Demo Dashboard — no login required in this prototype</div>
+    <div class="dash-stats" id="dash-stats"></div>
+
+    <div class="filters-bar">
+      <input type="text" id="f-search" placeholder="Search by ID, title or location..." oninput="renderComplaintTable()">
+      <select id="f-category" onchange="renderComplaintTable()">
+        <option value="All">All Categories</option>
+        <option>Road</option><option>Streetlight</option><option>Garbage</option><option>Water</option><option>Drainage</option><option>Traffic Signal</option><option>Public Infrastructure</option><option>Electrical</option><option>Public Park</option><option>Other</option>
+      </select>
+      <select id="f-priority" onchange="renderComplaintTable()">
+        <option value="All">All Priorities</option>
+        <option>Low</option><option>Medium</option><option>High</option><option>Critical</option>
+      </select>
+      <select id="f-status" onchange="renderComplaintTable()">
+        <option value="All">All Statuses</option>
+        <option>Reported</option><option>Verified</option><option>Assigned</option><option>In Progress</option><option>Resolved</option><option>Closed</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Complaint ID</th><th>Issue</th><th>Category</th><th>Location</th><th>Priority</th><th>Status</th><th>Department</th><th>Date</th><th></th></tr></thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+    <div class="mobile-cards" id="mobile-cards"></div>
+
+    <div class="charts-grid">
+      <div class="chart-card"><h4>Complaints by Category</h4><canvas id="chart-category"></canvas></div>
+      <div class="chart-card"><h4>Complaints by Status</h4><canvas id="chart-status"></canvas></div>
+      <div class="chart-card"><h4>Priority Distribution</h4><canvas id="chart-priority"></canvas></div>
+      <div class="chart-card"><h4>Complaints by Area</h4><canvas id="chart-area"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COMPLAINT DETAILS PAGE ================= -->
+<section class="page" id="page-details">
+  <div class="page-header"><div class="wrap"><h1 id="det-title">Complaint Details</h1><p id="det-id" class="font-mono"></p></div></div>
+  <div class="wrap" style="padding-top:30px;padding-bottom:70px" id="details-content"></div>
+</section>
+
+<!-- ================= ABOUT PAGE ================= -->
+<section class="page" id="page-about">
+  <div class="about-hero"><div class="wrap"><h1>About CivicConnect</h1><p>Connecting Darbhanga's citizens with faster, more transparent civic services.</p></div></div>
+  <div class="wrap section">
+    <div class="section-head" style="max-width:700px">
+      <h2>See an issue. Report it. Track it. Get it resolved.</h2>
+      <p>CivicConnect is a civic-tech platform built for Darbhanga, Bihar. It gives citizens a simple, transparent way to report public problems — potholes, broken streetlights, garbage, water leaks, drainage issues and more — with photo evidence and location details, while helping local authorities review, prioritize, assign and resolve complaints efficiently.</p>
+    </div>
+    <div class="about-grid">
+      <div class="about-card"><h4>🎯 Our Mission</h4><p>Reduce the gap between citizens reporting problems and authorities resolving them, through a transparent digital bridge.</p></div>
+      <div class="about-card"><h4>🏗️ Built For Darbhanga</h4><p>Designed around real Darbhanga localities — Laheriasarai, Tower Chowk, Donar, Benta, Kadirabad and more.</p></div>
+      <div class="about-card"><h4>🔍 Full Transparency</h4><p>Every complaint moves through a public status timeline: Reported, Verified, Assigned, In Progress, Resolved, Closed.</p></div>
+    </div>
+    <div class="card" style="margin-top:32px">
+      <h3 style="font-size:15px">Hackathon Prototype</h3>
+      <p style="font-size:13px;color:var(--gray-600);line-height:1.6;margin:0">CivicConnect is a demonstration prototype built for a hackathon. It uses mock data stored in your browser's local storage and does not connect to a real backend, database or government system. It is <b>not officially affiliated with the Darbhanga Municipal Corporation or any government authority</b>. All statistics, complaints and resolution records shown are for demonstration purposes only.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="logo" style="color:#fff;margin-bottom:12px">
+          <span class="mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L3 7v6c0 5 4 9 9 9s9-4 9-9V7l-9-5z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          CivicConnect
+        </div>
+        <p style="font-size:13px;line-height:1.6;color:#93A9B3;max-width:260px">Building a cleaner, safer and more responsive Darbhanga through citizen participation.</p>
+        <div style="margin-top:14px;font-size:13px">📍 Darbhanga, Bihar</div>
+        <div class="foot-tag" style="display:inline-block;margin-top:10px">Hackathon Prototype</div>
+      </div>
+      <div>
+        <h4>Platform</h4>
+        <a onclick="go('report')" href="#report">Report Issue</a>
+        <a onclick="go('track')" href="#track">Track Complaint</a>
+        <a onclick="go('dashboard')" href="#dashboard">Authority Dashboard</a>
+        <a onclick="go('about')" href="#about">About</a>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <a onclick="showLegal('privacy')" href="#">Privacy</a>
+        <a onclick="showLegal('terms')" href="#">Terms</a>
+      </div>
+      <div>
+        <h4>Complaint Support</h4>
+        <div style="font-size:13px;margin-bottom:4px">📞 7488699669</div>
+        <div style="font-size:12px;color:#7F97A2;margin-bottom:12px">Call for Complaint</div>
+        <div style="font-size:13px;margin-bottom:4px">💬 8406940095</div>
+        <div style="font-size:12px;color:#7F97A2;margin-bottom:14px">WhatsApp Complaint</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <a class="btn btn-call btn-sm" href="tel:7488699669">Call Now</a>
+          <a class="btn btn-wa btn-sm" target="_blank" href="https://wa.me/918406940095?text=Hello%20CivicConnect%2C%20I%20want%20to%20report%20a%20civic%20issue%20in%20Darbhanga.">WhatsApp</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 CivicConnect · Demonstration project for Darbhanga, Bihar</span>
+      <span class="foot-tag">Not affiliated with any government authority</span>
+    </div>
+  </div>
+</footer>
+
+<!-- floating buttons -->
+<div class="fab-wrap">
+  <a class="fab fab-wa" target="_blank" href="https://wa.me/918406940095?text=Hello%20CivicConnect%2C%20I%20want%20to%20report%20a%20civic%20issue%20in%20Darbhanga."><span>💬</span><span class="fab-txt">WhatsApp</span></a>
+  <a class="fab fab-call" href="tel:7488699669"><span>📞</span><span class="fab-txt">Call</span></a>
+</div>
+
+<script>
+/* ================= CONFIG ================= */
+const CONFIG = {
+  CALL_NUMBER: '7488699669',
+  WHATSAPP_NUMBER: '918406940095',
+  WA_MESSAGE: 'Hello CivicConnect, I want to report a civic issue in Darbhanga.'
+};
+const CATEGORIES = [
+  {key:'Road', icon:'🛣️', title:'Road / Pothole', desc:'Damaged roads, potholes and broken pavement.'},
+  {key:'Streetlight', icon:'💡', title:'Streetlight', desc:'Non-functional or damaged streetlights.'},
+  {key:'Garbage', icon:'🗑️', title:'Garbage', desc:'Uncollected waste and garbage accumulation.'},
+  {key:'Water', icon:'💧', title:'Water Leakage', desc:'Pipeline leaks and water wastage.'},
+  {key:'Drainage', icon:'🚰', title:'Drainage / Sewer', desc:'Blocked drains and sewer overflow.'},
+  {key:'Traffic Signal', icon:'🚦', title:'Traffic Signal', desc:'Malfunctioning traffic signals.'},
+  {key:'Public Park', icon:'🌳', title:'Public Park', desc:'Damaged or neglected park facilities.'},
+  {key:'Public Infrastructure', icon:'🏗️', title:'Public Infrastructure', desc:'Damaged public buildings and structures.'},
+  {key:'Electrical', icon:'⚡', title:'Electrical Issue', desc:'Exposed wires and electrical hazards.'},
+  {key:'Other', icon:'🏠', title:'Other Civic Issue', desc:'Any other civic issue not listed above.'}
+];
+const DEPARTMENTS = ['Darbhanga Municipal Corporation','Road & Infrastructure Department','Water Supply Department','Sanitation Department','Electrical Department','Drainage Department','Public Works Department'];
+const AREAS = ['Laheriasarai','Tower Chowk','Darbhanga Tower','Donar','Benta','Kadirabad','University Area','Station Road'];
+const STATUS_FLOW = ['Reported','Verified','Assigned','In Progress','Resolved','Closed'];
+const STATUS_ICON = {Reported:'📝',Verified:'✔️',Assigned:'📌','In Progress':'🔧',Resolved:'✅',Closed:'🔒'};
+
+/* ================= STORAGE ================= */
+function loadComplaints(){
+  const raw = localStorage.getItem('cc_complaints');
+  return raw ? JSON.parse(raw) : [];
+}
+function saveComplaints(list){ localStorage.setItem('cc_complaints', JSON.stringify(list)); }
+function getCounter(){ return parseInt(localStorage.getItem('cc_counter')||'1000',10); }
+function bumpCounter(){ const c=getCounter()+1; localStorage.setItem('cc_counter', c); return c; }
+function genId(){ return 'CC-DAR-2026-'+bumpCounter(); }
+
+function seedData(){
+  if(loadComplaints().length) return;
+  const now = new Date('2026-08-23T10:00:00');
+  function d(daysAgo,hrs=10,min=0){ const t=new Date(now); t.setDate(t.getDate()-daysAgo); t.setHours(hrs,min,0,0); return t.toISOString(); }
+  function tl(entries){ return entries.map(e=>({status:e[0],date:e[1],note:e[2]})); }
+
+  const seeds = [
+    {id:'CC-DAR-2026-1001',title:'Pothole near Tower Chowk',category:'Road',icon:'🛣️',area:'Tower Chowk',landmark:'Near Bus Stand',address:'Tower Chowk Main Road',pincode:'846004',priority:'High',status:'In Progress',department:'Road & Infrastructure Department',officer:'Er. R. Kumar',desc:'A large pothole has formed on the main road causing traffic slowdowns and risk to two-wheelers, especially at night.',image:null,created:d(9,9,10),
+      timeline:tl([['Reported',d(9,9,10),'Complaint submitted by citizen.'],['Verified',d(8,13,15),'Issue verified by authority.'],['Assigned',d(7,9,30),'Assigned to Road & Infrastructure Department.'],['In Progress',d(3,11,0),'Repair crew scheduled for the site.']]), resolution:null},
+    {id:'CC-DAR-2026-1002',title:'Broken Streetlight',category:'Streetlight',icon:'💡',area:'Kadirabad',landmark:'Near Community Hall',address:'Kadirabad Chowk Road',pincode:'846003',priority:'Medium',status:'Assigned',department:'Electrical Department',officer:'',desc:'Streetlight has not been working for over two weeks, making the lane unsafe after dark.',image:null,created:d(6,18,20),
+      timeline:tl([['Reported',d(6,18,20),'Complaint submitted by citizen.'],['Verified',d(5,10,0),'Issue verified by authority.'],['Assigned',d(4,9,0),'Assigned to Electrical Department.']]), resolution:null},
+    {id:'CC-DAR-2026-1003',title:'Garbage accumulation near Station Road',category:'Garbage',icon:'🗑️',area:'Station Road',landmark:'Near Railway Crossing',address:'Station Road Market Area',pincode:'846004',priority:'High',status:'Resolved',department:'Sanitation Department',officer:'S. Jha',desc:'Garbage has been piling up for days near the market, creating a health hazard and bad odor.',image:null,created:d(14,8,0),
+      timeline:tl([['Reported',d(14,8,0),'Complaint submitted by citizen.'],['Verified',d(13,10,0),'Issue verified by authority.'],['Assigned',d(12,9,0),'Assigned to Sanitation Department.'],['In Progress',d(11,9,0),'Cleanup crew dispatched.'],['Resolved',d(10,16,0),'Garbage cleared and area sanitized.']]),
+      resolution:{desc:'Garbage cleared, area sanitized and a collection schedule set up for this stretch of Station Road.',image:null,date:d(10,16,0)}},
+    {id:'CC-DAR-2026-1004',title:'Water pipeline leakage',category:'Water',icon:'💧',area:'Laheriasarai',landmark:'Near SBI Branch',address:'Laheriasarai Main Road',pincode:'846001',priority:'Critical',status:'Verified',department:'Water Supply Department',officer:'',desc:'A major pipeline leak is flooding the road and wasting a large amount of water daily.',image:null,created:d(2,7,45),
+      timeline:tl([['Reported',d(2,7,45),'Complaint submitted by citizen.'],['Verified',d(1,12,0),'Issue verified — confirmed active leak, escalated as critical.']]), resolution:null},
+    {id:'CC-DAR-2026-1005',title:'Blocked drainage causing waterlogging',category:'Drainage',icon:'🚰',area:'Donar',landmark:'Near Primary School',address:'Donar Link Road',pincode:'846004',priority:'High',status:'In Progress',department:'Drainage Department',officer:'A. Verma',desc:'Blocked drain is causing waterlogging on the road every time it rains, affecting school children.',image:null,created:d(5,9,0),
+      timeline:tl([['Reported',d(5,9,0),'Complaint submitted by citizen.'],['Verified',d(4,11,0),'Issue verified by authority.'],['Assigned',d(3,9,0),'Assigned to Drainage Department.'],['In Progress',d(1,10,0),'Desilting work underway.']]), resolution:null},
+    {id:'CC-DAR-2026-1006',title:'Malfunctioning traffic signal',category:'Traffic Signal',icon:'🚦',area:'Darbhanga Tower',landmark:'Main Junction',address:'Darbhanga Tower Junction',pincode:'846004',priority:'Critical',status:'Assigned',department:'Public Works Department',officer:'',desc:'Traffic signal stuck on red for one direction, causing congestion and near-accidents at a busy junction.',image:null,created:d(1,8,30),
+      timeline:tl([['Reported',d(1,8,30),'Complaint submitted by citizen.'],['Verified',d(1,11,0),'Issue verified — flagged as critical safety issue.'],['Assigned',d(0,9,0),'Assigned to Public Works Department for urgent repair.']]), resolution:null},
+    {id:'CC-DAR-2026-1007',title:'Damaged park benches and fencing',category:'Public Park',icon:'🌳',area:'University Area',landmark:'Central Park',address:'University Area Park Road',pincode:'846008',priority:'Low',status:'Reported',department:'',officer:'',desc:'Several benches are broken and the boundary fencing has collapsed in parts of the park.',image:null,created:d(0,9,0),
+      timeline:tl([['Reported',d(0,9,0),'Complaint submitted by citizen.']]), resolution:null},
+    {id:'CC-DAR-2026-1008',title:'Exposed electrical wiring near market',category:'Electrical',icon:'⚡',area:'Benta',landmark:'Near Vegetable Market',address:'Benta Market Road',pincode:'846006',priority:'Critical',status:'In Progress',department:'Electrical Department',officer:'M. Singh',desc:'Loose electrical wires hanging low near the market pose a serious safety hazard, especially in rain.',image:null,created:d(4,7,0),
+      timeline:tl([['Reported',d(4,7,0),'Complaint submitted by citizen.'],['Verified',d(4,10,0),'Verified as urgent safety hazard.'],['Assigned',d(3,9,0),'Assigned to Electrical Department.'],['In Progress',d(2,9,0),'Crew dispatched to secure wiring.']]), resolution:null},
+    {id:'CC-DAR-2026-1009',title:'Damaged public infrastructure — community hall roof',category:'Public Infrastructure',icon:'🏗️',area:'Kadirabad',landmark:'Community Hall',address:'Kadirabad Main Street',pincode:'846003',priority:'Medium',status:'Resolved',department:'Public Works Department',officer:'K. Thakur',desc:'Part of the community hall roof has been damaged and needs repair before the monsoon.',image:null,created:d(20,9,0),
+      timeline:tl([['Reported',d(20,9,0),'Complaint submitted by citizen.'],['Verified',d(19,10,0),'Issue verified by authority.'],['Assigned',d(18,9,0),'Assigned to Public Works Department.'],['In Progress',d(15,9,0),'Repair work started.'],['Resolved',d(12,17,0),'Roof repaired and inspected.']]),
+      resolution:{desc:'Roof section repaired, waterproofed and inspected for safety ahead of the monsoon season.',image:null,date:d(12,17,0)}},
+    {id:'CC-DAR-2026-1010',title:'Overflowing garbage bins',category:'Garbage',icon:'🗑️',area:'Station Road',landmark:'Bus Stand',address:'Station Road Bus Stand Lane',pincode:'846004',priority:'Medium',status:'Verified',department:'',officer:'',desc:'Public garbage bins near the bus stand are overflowing and not being cleared regularly.',image:null,created:d(3,8,0),
+      timeline:tl([['Reported',d(3,8,0),'Complaint submitted by citizen.'],['Verified',d(2,9,0),'Issue verified by authority.']]), resolution:null},
+    {id:'CC-DAR-2026-1011',title:'Streetlight flickering continuously',category:'Streetlight',icon:'💡',area:'Donar',landmark:'Near Petrol Pump',address:'Donar Bypass Road',pincode:'846004',priority:'Low',status:'Closed',department:'Electrical Department',officer:'M. Singh',desc:'Streetlight flickers throughout the night, likely a wiring fault.',image:null,created:d(25,9,0),
+      timeline:tl([['Reported',d(25,9,0),'Complaint submitted by citizen.'],['Verified',d(24,9,0),'Issue verified by authority.'],['Assigned',d(23,9,0),'Assigned to Electrical Department.'],['In Progress',d(21,9,0),'Wiring inspected and replaced.'],['Resolved',d(19,9,0),'Streetlight repaired and tested.'],['Closed',d(18,9,0),'Citizen confirmed resolution — case closed.']]),
+      resolution:{desc:'Faulty wiring replaced and streetlight tested for three consecutive nights before closing the case.',image:null,date:d(19,9,0)}},
+    {id:'CC-DAR-2026-1012',title:'Pothole cluster near University Area',category:'Road',icon:'🛣️',area:'University Area',landmark:'Main Gate Road',address:'University Area Approach Road',pincode:'846008',priority:'High',status:'Assigned',department:'Road & Infrastructure Department',officer:'',desc:'Multiple potholes have formed along the approach road to the university, slowing traffic significantly.',image:null,created:d(2,9,0),
+      timeline:tl([['Reported',d(2,9,0),'Complaint submitted by citizen.'],['Verified',d(1,10,0),'Issue verified by authority.'],['Assigned',d(0,9,0),'Assigned to Road & Infrastructure Department.']]), resolution:null}
+  ];
+  saveComplaints(seeds);
+  localStorage.setItem('cc_counter','1012');
+}
+seedData();
+
+/* ================= UTIL ================= */
+function fmtDate(iso){ const dt=new Date(iso); return dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})+', '+dt.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}); }
+function fmtDateShort(iso){ return new Date(iso).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); }
+function badgeClass(val){
+  const map={Low:'b-low',Medium:'b-medium',High:'b-high',Critical:'b-critical',Reported:'b-reported',Verified:'b-verified',Assigned:'b-assigned','In Progress':'b-inprogress',Resolved:'b-resolved',Closed:'b-closed'};
+  return map[val]||'b-low';
+}
+function toast(msg,icon){
+  const host=document.getElementById('toast-host');
+  const t=document.createElement('div'); t.className='toast'; t.innerHTML=`<span>${icon||'✅'}</span><span>${msg}</span>`;
+  host.appendChild(t); setTimeout(()=>{t.style.opacity='0';t.style.transition='.3s';setTimeout(()=>t.remove(),300)},2800);
+}
+function catIcon(key){ const c=CATEGORIES.find(c=>c.key===key); return c?c.icon:'🏠'; }
+function catTitle(key){ const c=CATEGORIES.find(c=>c.key===key); return c?c.title:key; }
+
+/* ================= ROUTER ================= */
+function go(page, param){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.toggle('active', a.dataset.page===page));
+  closeMobileMenu();
+  window.scrollTo({top:0,behavior:'instant' in window ? 'auto':'auto'});
+  window.location.hash = param ? '#'+page+'/'+param : '#'+page;
+  if(page==='home') renderHome();
+  if(page==='dashboard') renderDashboard();
+  if(page==='details' && param) renderDetails(param);
+  if(page==='report') {} // form persists as-is
+}
+function handleRoute(){
+  const h = window.location.hash.replace('#','');
+  if(!h){ go('home'); return; }
+  const [page,param] = h.split('/');
+  if(['home','report','track','dashboard','about'].includes(page)) go(page,param);
+  else if(page==='details' && param) go('details',param);
+  else go('home');
+}
+window.addEventListener('hashchange', handleRoute);
+
+function toggleMobileMenu(){ document.getElementById('mobile-menu').classList.toggle('open'); }
+function closeMobileMenu(){ document.getElementById('mobile-menu').classList.remove('open'); }
+
+/* ================= HOME RENDER ================= */
+function renderHome(){
+  const list = loadComplaints();
+  const resolved = list.filter(c=>['Resolved','Closed'].includes(c.status)).length;
+  const inProgress = list.filter(c=>c.status==='In Progress').length;
+  const rate = list.length ? Math.round((resolved/list.length)*100) : 0;
+  document.getElementById('home-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-num">1,248+</div><div class="stat-label">Issues Reported</div><div class="stat-demo">Demo statistic</div></div>
+    <div class="stat-card"><div class="stat-num">936+</div><div class="stat-label">Issues Resolved</div><div class="stat-demo">Demo statistic</div></div>
+    <div class="stat-card"><div class="stat-num">184</div><div class="stat-label">In Progress</div><div class="stat-demo">Demo statistic</div></div>
+    <div class="stat-card"><div class="stat-num">75%</div><div class="stat-label">Resolution Rate</div><div class="stat-demo">Demo statistic</div></div>`;
+
+  document.getElementById('home-categories').innerHTML = CATEGORIES.map(c=>`
+    <div class="cat-card" onclick="go('report')"><div class="cat-ic">${c.icon}</div><h4>${c.title}</h4><p>${c.desc}</p></div>
+  `).join('');
+
+  const recent = [...list].sort((a,b)=>new Date(b.created)-new Date(a.created)).slice(0,3);
+  document.getElementById('home-recent').innerHTML = recent.map(c=>`
+    <div class="rc-card" onclick="go('details','${c.id}')">
+      <div class="rc-top"><span style="font-size:20px">${c.icon}</span><span class="badge ${badgeClass(c.status)}">${c.status}</span></div>
+      <h4>${c.title}</h4>
+      <div class="loc">📍 ${c.area}, Darbhanga</div>
+    </div>`).join('');
+
+  renderHotspotMap(list);
+}
+
+function renderHotspotMap(list){
+  const pts = [
+    ['Laheriasarai',60,70],['Tower Chowk',150,55],['Darbhanga Tower',220,100],['Donar',90,150],
+    ['Benta',260,170],['Kadirabad',180,190],['University Area',300,90],['Station Road',330,150]
+  ];
+  const colorFor = p => p==='Critical'?'#C6303E':p==='High'?'#D9740A':p==='Medium'?'#D4A017':'#5B7083';
+  let markers='';
+  pts.forEach(([area,x,y])=>{
+    const items = list.filter(c=>c.area===area);
+    items.forEach((c,i)=>{
+      const ox=x+(i%3)*10-8, oy=y+Math.floor(i/3)*10-8;
+      markers+=`<circle cx="${ox}" cy="${oy}" r="6" fill="${colorFor(c.priority)}" opacity="0.85"><title>${c.title}</title></circle>`;
+    });
+  });
+  let labels='';
+  pts.forEach(([area,x,y])=>{ labels+=`<text x="${x}" y="${y-14}" font-size="9" fill="#6B7C8C" font-family="Inter" text-anchor="middle">${area}</text>`; });
+  const svg = `<svg viewBox="0 0 380 240" width="100%" style="max-height:320px">
+    <defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#E2E7EC" stroke-width="1"/></pattern></defs>
+    <rect width="380" height="240" fill="url(#grid)"/>
+    <path d="M10 120 H370 M190 10 V230 M40 40 L340 200 M340 40 L40 200" stroke="#D5DCE2" stroke-width="1.5" fill="none"/>
+    ${labels}${markers}
+  </svg>`;
+  document.getElementById('hotspot-map').innerHTML = svg;
+}
+
+/* ================= LEGAL MODAL ================= */
+function showLegal(type){
+  const content = type==='privacy'
+    ? {title:'Privacy',body:'CivicConnect is a hackathon prototype. All complaint data is stored only in your own browser local storage — nothing is sent to a server. No personal citizen information is displayed publicly; recent complaints shown on the site are anonymized. Do not enter sensitive personal information into this demo.'}
+    : {title:'Terms',body:'CivicConnect is a demonstration project built for a hackathon and is provided as-is, without warranty. It is not officially affiliated with the Darbhanga Municipal Corporation or any government authority. Statistics, complaints and resolution records shown are for demonstration purposes only.'};
+  document.getElementById('modal-content').innerHTML = `<h3>${content.title}</h3><p>${content.body}</p><div class="modal-actions"><button class="btn btn-primary btn-sm" onclick="closeModal()">Close</button></div>`;
+  document.getElementById('modal-bg').classList.add('open');
+}
+function closeModal(){ document.getElementById('modal-bg').classList.remove('open'); }
+document.getElementById('modal-bg').addEventListener('click',e=>{ if(e.target.id==='modal-bg') closeModal(); });
+
+/* ================= REPORT FORM ================= */
+let reportState = { step:1, category:null, title:'', desc:'', image:null, area:'', landmark:'', address:'', pincode:'', priority:null };
+
+function renderCategorySelect(){
+  document.getElementById('cat-select-grid').innerHTML = CATEGORIES.map(c=>`
+    <div class="cat-opt" id="cat-opt-${c.key.replace(/\s/g,'')}" onclick="selectCategory('${c.key}')"><div class="ic">${c.icon}</div><span>${c.title}</span></div>
+  `).join('');
+}
+renderCategorySelect();
+
+function selectCategory(key){
+  reportState.category = key;
+  document.querySelectorAll('.cat-opt').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('cat-opt-'+key.replace(/\s/g,'')).classList.add('selected');
+  document.getElementById('err-category').style.display='none';
+}
+function selectPriority(p){
+  reportState.priority = p;
+  document.querySelectorAll('.pri-opt').forEach(el=>el.classList.remove('selected'));
+  document.querySelector(`.pri-opt[data-p="${p}"]`).classList.add('selected');
+  document.getElementById('err-priority').style.display='none';
+}
+function updateCharCount(){ document.getElementById('char-count').innerText = document.getElementById('in-desc').value.length; }
+function handleImageUpload(e){
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    reportState.image = ev.target.result;
+    document.getElementById('preview-img').src = ev.target.result;
+    document.getElementById('preview-img').style.display='block';
+    document.getElementById('upload-placeholder').style.display='none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateLocPreview(){
+  const area = document.getElementById('in-area').value.trim();
+  document.getElementById('loc-preview').innerText = '📍 ' + (area? area+', ':'') + 'Darbhanga, Bihar';
+}
+['in-area'].forEach(id=>{ document.addEventListener('input', e=>{ if(e.target.id==='in-area') updateLocPreview(); }); });
+
+function clearFieldError(id){ document.getElementById(id).classList.remove('invalid'); }
+function setFieldError(id){ document.getElementById(id).classList.add('invalid'); }
+
+function reportNext(){
+  const s = reportState.step;
+  if(s===1){
+    if(!reportState.category){ document.getElementById('err-category').style.display='block'; return; }
+  }
+  if(s===2){
+    reportState.title = document.getElementById('in-title').value.trim();
+    reportState.desc = document.getElementById('in-desc').value.trim();
+    let ok=true;
+    if(reportState.title.length<3){ setFieldError('field-title'); ok=false; } else clearFieldError('field-title');
+    if(reportState.desc.length<15){ setFieldError('field-desc'); ok=false; } else clearFieldError('field-desc');
+    if(!ok) return;
+  }
+  if(s===4){
+    reportState.area = document.getElementById('in-area').value.trim();
+    reportState.landmark = document.getElementById('in-landmark').value.trim();
+    reportState.address = document.getElementById('in-address').value.trim();
+    reportState.pincode = document.getElementById('in-pincode').value.trim();
+    let ok=true;
+    if(!reportState.area){ setFieldError('field-area'); ok=false; } else clearFieldError('field-area');
+    if(!reportState.address){ setFieldError('field-address'); ok=false; } else clearFieldError('field-address');
+    if(!ok) return;
+  }
+  if(s===5){
+    if(!reportState.priority){ document.getElementById('err-priority').style.display='block'; return; }
+    submitComplaint();
+    return;
+  }
+  reportState.step++;
+  renderReportStep();
+}
+function reportBack(){
+  if(reportState.step<=1) return;
+  reportState.step--;
+  renderReportStep();
+}
+function renderReportStep(){
+  for(let i=1;i<=5;i++){
+    document.getElementById('rstep-'+i).style.display = i===reportState.step ? 'block':'none';
+    const dot = document.getElementById('sd-'+i);
+    dot.classList.remove('done','current');
+    if(i<reportState.step) dot.classList.add('done');
+    if(i===reportState.step) dot.classList.add('current');
+  }
+  document.getElementById('step-fill').style.width = ((reportState.step-1)/4*100)+'%';
+  document.getElementById('btn-back').style.visibility = reportState.step===1?'hidden':'visible';
+  document.getElementById('btn-next').innerText = reportState.step===5 ? 'Submit Complaint' : 'Continue';
+}
+
+function submitComplaint(){
+  const list = loadComplaints();
+  const id = genId();
+  const nowIso = new Date().toISOString();
+  const complaint = {
+    id, title: reportState.title, category: reportState.category, icon: catIcon(reportState.category),
+    area: reportState.area, landmark: reportState.landmark, address: reportState.address, pincode: reportState.pincode,
+    priority: reportState.priority, status: 'Reported', department:'', officer:'',
+    desc: reportState.desc, image: reportState.image, created: nowIso,
+    timeline: [{status:'Reported', date: nowIso, note:'Complaint submitted by citizen.'}],
+    resolution: null
+  };
+  list.push(complaint);
+  saveComplaints(list);
+  toast('Complaint submitted successfully.', '✅');
+
+  document.getElementById('report-form-card').style.display='none';
+  const s = document.getElementById('report-success');
+  s.style.display='block';
+  document.getElementById('success-id').innerText = id;
+  document.getElementById('success-summary').innerHTML = `
+    <div class="summary-row"><span>Complaint ID</span><span class="font-mono">${id}</span></div>
+    <div class="summary-row"><span>Category</span><span>${catTitle(complaint.category)}</span></div>
+    <div class="summary-row"><span>Location</span><span>${complaint.area}, Darbhanga</span></div>
+    <div class="summary-row"><span>Priority</span><span class="badge ${badgeClass(complaint.priority)}">${complaint.priority}</span></div>
+    <div class="summary-row"><span>Current Status</span><span class="badge ${badgeClass(complaint.status)}">${complaint.status}</span></div>`;
+  window._lastSubmittedId = id;
+  s.scrollIntoView({behavior:'smooth'});
+}
+function goTrackWithId(){
+  go('track');
+  setTimeout(()=>{ document.getElementById('track-input').value = window._lastSubmittedId||''; trackComplaint(); },80);
+}
+function resetReportForm(){
+  reportState = { step:1, category:null, title:'', desc:'', image:null, area:'', landmark:'', address:'', pincode:'', priority:null };
+  document.getElementById('report-form-card').style.display='block';
+  document.getElementById('report-success').style.display='none';
+  document.getElementById('in-title').value=''; document.getElementById('in-desc').value=''; document.getElementById('char-count').innerText='0';
+  document.getElementById('in-area').value=''; document.getElementById('in-landmark').value=''; document.getElementById('in-address').value=''; document.getElementById('in-pincode').value='';
+  document.getElementById('preview-img').style.display='none'; document.getElementById('upload-placeholder').style.display='block';
+  document.querySelectorAll('.cat-opt,.pri-opt').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('loc-preview').innerText='📍 Darbhanga, Bihar';
+  renderReportStep();
+}
+renderReportStep();
+
+/* ================= TRACK PAGE ================= */
+function trackComplaint(){
+  const raw = document.getElementById('track-input').value.trim().toUpperCase();
+  document.getElementById('track-error').style.display='none';
+  if(!raw){ return; }
+  const list = loadComplaints();
+  const c = list.find(x=>x.id.toUpperCase()===raw);
+  if(!c){
+    document.getElementById('track-error').style.display='block';
+    document.getElementById('track-result').innerHTML='';
+    return;
+  }
+  document.getElementById('track-result').innerHTML = complaintCardHtml(c) + timelineHtml(c);
+}
+function complaintCardHtml(c){
+  return `
+  <div class="card" style="margin-bottom:20px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+      <div>
+        <div class="font-mono" style="font-size:12.5px;color:var(--gray-500);margin-bottom:4px">${c.id}</div>
+        <h3 style="margin:0;font-size:18px">${c.icon} ${c.title}</h3>
+      </div>
+      <span class="badge ${badgeClass(c.status)}" style="font-size:12.5px">${STATUS_ICON[c.status]} ${c.status}</span>
+    </div>
+    <div class="kv"><span>Category</span><span>${catTitle(c.category)}</span></div>
+    <div class="kv"><span>Location</span><span>${c.area}, Darbhanga, Bihar</span></div>
+    <div class="kv"><span>Submitted Date</span><span>${fmtDateShort(c.created)}</span></div>
+    <div class="kv"><span>Priority</span><span class="badge ${badgeClass(c.priority)}">${c.priority}</span></div>
+    <div class="kv"><span>Assigned Department</span><span>${c.department||'Not yet assigned'}</span></div>
+    <div class="kv"><span>Current Status</span><span class="badge ${badgeClass(c.status)}">${c.status}</span></div>
+    <div style="margin-top:16px;text-align:right"><button class="btn btn-outline btn-sm" onclick="go('details','${c.id}')">View Full Details</button></div>
+  </div>`;
+}
+function timelineHtml(c){
+  const idx = STATUS_FLOW.indexOf(c.status);
+  const h = STATUS_FLOW.map((s,i)=>{
+    const entry = c.timeline.find(t=>t.status===s);
+    const cls = i<idx?'done':(i===idx?'current':'');
+    const icon = i<idx?'✓':(i===idx?'●':'○');
+    return `<div class="tl-node"><div class="tl-dot ${cls}">${icon}</div><h5>${s}</h5>${entry?`<small>${fmtDateShort(entry.date)}</small><small style="margin-top:2px">${entry.note}</small>`:'<small>Pending</small>'}</div>`;
+  }).join('');
+  return `<div class="card"><h3 style="font-size:15px">Status Timeline</h3><div class="timeline-h">${h}</div><div class="timeline-v" style="position:relative;padding-left:6px">${h}</div></div>`;
+}
+
+/* ================= DASHBOARD ================= */
+function renderDashboard(){
+  const list = loadComplaints();
+  const total = list.length;
+  const newC = list.filter(c=>c.status==='Reported').length;
+  const verified = list.filter(c=>c.status==='Verified').length;
+  const assigned = list.filter(c=>c.status==='Assigned').length;
+  const inProg = list.filter(c=>c.status==='In Progress').length;
+  const resolved = list.filter(c=>['Resolved','Closed'].includes(c.status)).length;
+  const critical = list.filter(c=>c.priority==='Critical').length;
+  const rate = total ? Math.round((resolved/total)*100) : 0;
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="dstat"><div class="n">${total}</div><div class="l">Total Complaints</div></div>
+    <div class="dstat"><div class="n">${newC}</div><div class="l">New Reports</div></div>
+    <div class="dstat"><div class="n">${verified}</div><div class="l">Verified</div></div>
+    <div class="dstat"><div class="n">${assigned}</div><div class="l">Assigned</div></div>
+    <div class="dstat"><div class="n">${inProg}</div><div class="l">In Progress</div></div>
+    <div class="dstat"><div class="n">${resolved}</div><div class="l">Resolved</div></div>
+    <div class="dstat"><div class="n" style="color:var(--red)">${critical}</div><div class="l">Critical Issues</div></div>
+    <div class="dstat"><div class="n">${rate}%</div><div class="l">Resolution Rate</div></div>`;
+  renderComplaintTable();
+  renderCharts(list);
+}
+function filteredComplaints(){
+  const list = loadComplaints();
+  const q = (document.getElementById('f-search').value||'').toLowerCase();
+  const cat = document.getElementById('f-category').value;
+  const pri = document.getElementById('f-priority').value;
+  const st = document.getElementById('f-status').value;
+  return list.filter(c=>{
+    if(cat!=='All' && c.category!==cat) return false;
+    if(pri!=='All' && c.priority!==pri) return false;
+    if(st!=='All' && c.status!==st) return false;
+    if(q && !(c.id.toLowerCase().includes(q)||c.title.toLowerCase().includes(q)||c.area.toLowerCase().includes(q))) return false;
+    return true;
+  }).sort((a,b)=>new Date(b.created)-new Date(a.created));
+}
+function renderComplaintTable(){
+  const list = filteredComplaints();
+  const tbody = document.getElementById('table-body');
+  if(!list.length){
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--gray-500)">No complaints match your filters.</td></tr>`;
+  } else {
+    tbody.innerHTML = list.map(c=>`
+      <tr onclick="go('details','${c.id}')">
+        <td class="font-mono">${c.id}</td>
+        <td>${c.icon} ${c.title}</td>
+        <td>${catTitle(c.category)}</td>
+        <td>${c.area}</td>
+        <td><span class="badge ${badgeClass(c.priority)}">${c.priority}</span></td>
+        <td><span class="badge ${badgeClass(c.status)}">${c.status}</span></td>
+        <td>${c.department||'—'}</td>
+        <td>${fmtDateShort(c.created)}</td>
+        <td><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();go('details','${c.id}')">View</button></td>
+      </tr>`).join('');
+  }
+  const mc = document.getElementById('mobile-cards');
+  if(!list.length){
+    mc.innerHTML = `<div class="empty-state"><div class="ic">🔍</div>No complaints match your filters.</div>`;
+  } else {
+    mc.innerHTML = list.map(c=>`
+      <div class="mc-card" onclick="go('details','${c.id}')">
+        <div class="mc-top"><span class="mc-id">${c.id}</span><span class="badge ${badgeClass(c.status)}">${c.status}</span></div>
+        <b style="font-size:14px">${c.icon} ${c.title}</b>
+        <div style="font-size:12.5px;color:var(--gray-500);margin-top:6px">📍 ${c.area} &nbsp;·&nbsp; ${catTitle(c.category)}</div>
+        <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+          <span class="badge ${badgeClass(c.priority)}">${c.priority}</span>
+          <span style="font-size:11.5px;color:var(--gray-400)">${fmtDateShort(c.created)}</span>
+        </div>
+      </div>`).join('');
+  }
+}
+let _charts = {};
+function renderCharts(list){
+  Object.values(_charts).forEach(ch=>ch.destroy());
+  const palette = ['#0B3D5C','#12B5AB','#D9740A','#178A4C','#6B3FBF','#C6303E','#D4A017','#5B7083','#14608F','#93A1AF'];
+
+  const catCounts = {}; CATEGORIES.forEach(c=>catCounts[c.key]=0);
+  list.forEach(c=>catCounts[c.category]=(catCounts[c.category]||0)+1);
+  _charts.cat = new Chart(document.getElementById('chart-category'), { type:'bar',
+    data:{ labels:Object.keys(catCounts), datasets:[{ data:Object.values(catCounts), backgroundColor:'#12B5AB', borderRadius:6 }] },
+    options:{ plugins:{legend:{display:false}}, scales:{ x:{ticks:{font:{size:10}}}, y:{beginAtZero:true,ticks:{precision:0}} } } });
+
+  const stCounts = {}; STATUS_FLOW.forEach(s=>stCounts[s]=0);
+  list.forEach(c=>stCounts[c.status]=(stCounts[c.status]||0)+1);
+  _charts.status = new Chart(document.getElementById('chart-status'), { type:'doughnut',
+    data:{ labels:Object.keys(stCounts), datasets:[{ data:Object.values(stCounts), backgroundColor:palette }] },
+    options:{ plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:10.5}}}} } });
+
+  const priCounts = {Low:0,Medium:0,High:0,Critical:0};
+  list.forEach(c=>priCounts[c.priority]=(priCounts[c.priority]||0)+1);
+  _charts.pri = new Chart(document.getElementById('chart-priority'), { type:'pie',
+    data:{ labels:Object.keys(priCounts), datasets:[{ data:Object.values(priCounts), backgroundColor:['#5B7083','#D4A017','#D9740A','#C6303E'] }] },
+    options:{ plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:10.5}}}} } });
+
+  const areaCounts = {}; AREAS.forEach(a=>areaCounts[a]=0);
+  list.forEach(c=>areaCounts[c.area]=(areaCounts[c.area]||0)+1);
+  _charts.area = new Chart(document.getElementById('chart-area'), { type:'bar',
+    data:{ labels:Object.keys(areaCounts), datasets:[{ data:Object.values(areaCounts), backgroundColor:'#0B3D5C', borderRadius:6 }] },
+    options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{ x:{beginAtZero:true,ticks:{precision:0}}, y:{ticks:{font:{size:10}}} } } });
+}
+
+/* ================= DETAILS PAGE ================= */
+function renderDetails(id){
+  const list = loadComplaints();
+  const c = list.find(x=>x.id===id);
+  const wrap = document.getElementById('details-content');
+  if(!c){ wrap.innerHTML = `<div class="empty-state"><div class="ic">🚫</div>Complaint not found.</div>`; return; }
+  document.getElementById('det-title').innerText = c.icon+' '+c.title;
+  document.getElementById('det-id').innerText = c.id;
+
+  const idx = STATUS_FLOW.indexOf(c.status);
+  const tlH = STATUS_FLOW.map((s,i)=>{
+    const entry = c.timeline.find(t=>t.status===s);
+    const cls = i<idx?'done':(i===idx?'current':'');
+    const icon = i<idx?'✓':(i===idx?'●':'○');
+    return `<div class="tl-node"><div class="tl-dot ${cls}">${icon}</div><h5>${s}</h5>${entry?`<small>${fmtDateShort(entry.date)}</small><small style="margin-top:2px">${entry.note}</small>`:'<small>Pending</small>'}</div>`;
+  }).join('');
+
+  wrap.innerHTML = `
+  <div class="details-grid">
+    <div>
+      <div class="card dt-section">
+        <h4>Overview</h4>
+        <div class="kv"><span>Complaint ID</span><span class="font-mono">${c.id}</span></div>
+        <div class="kv"><span>Category</span><span>${catTitle(c.category)}</span></div>
+        <div class="kv"><span>Priority</span><span class="badge ${badgeClass(c.priority)}">${c.priority}</span></div>
+        <div class="kv"><span>Location</span><span>${c.area}, Darbhanga, Bihar</span></div>
+        <div class="kv"><span>Status</span><span class="badge ${badgeClass(c.status)}">${c.status}</span></div>
+        <div class="kv"><span>Submitted</span><span>${fmtDateShort(c.created)}</span></div>
+      </div>
+      <div class="card dt-section">
+        <h4>Description</h4>
+        <p>${c.desc}</p>
+      </div>
+      <div class="card dt-section">
+        <h4>Citizen Evidence</h4>
+        ${c.image ? `<img src="${c.image}" style="border-radius:12px;max-height:300px;object-fit:cover;width:100%">` : `<div class="empty-state" style="padding:26px"><div class="ic">📷</div>No photo evidence uploaded.</div>`}
+      </div>
+      <div class="card dt-section">
+        <h4>Timeline</h4>
+        <div class="timeline-h">${tlH}</div>
+        <div class="timeline-v">${tlH}</div>
+      </div>
+      <div class="card dt-section" id="resolution-block">
+        <h4>Resolution</h4>
+        ${c.resolution ? `
+          <p>${c.resolution.desc}</p>
+          <div style="font-size:12px;color:var(--gray-500);margin-top:8px">Resolved on ${fmtDateShort(c.resolution.date)}</div>
+          <p style="font-size:11.5px;color:var(--gray-400);margin-top:10px">Resolution information shown in this prototype is demonstration data.</p>
+          ${c.resolution.image ? `<div class="res-proof-imgs"><img src="${c.image||c.resolution.image}"><img src="${c.resolution.image}"></div>` : ''}
+        ` : `<div class="empty-state" style="padding:20px"><div class="ic">⏳</div>Not yet resolved.</div>`}
+      </div>
+      <div class="card dt-section">
+        <h4>Need Help With This Complaint?</h4>
+        <p style="font-size:13px;color:var(--gray-600);margin:0 0 12px">For assistance regarding complaint status or submission:</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <a class="btn btn-call btn-sm" href="tel:${CONFIG.CALL_NUMBER}">Call: ${CONFIG.CALL_NUMBER}</a>
+          <a class="btn btn-wa btn-sm" target="_blank" href="https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(CONFIG.WA_MESSAGE)}">WhatsApp: 8406940095</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions-panel">
+      <div class="demo-tag">🛡️ Authority Actions (Demo)</div>
+      <div class="card dt-section">
+        <h4>Assign Complaint</h4>
+        <div class="field"><label>Department</label>
+          <select id="assign-dept">
+            <option value="">Select department...</option>
+            ${DEPARTMENTS.map(d=>`<option ${c.department===d?'selected':''}>${d}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>Assigned Officer <span style="color:var(--gray-400);font-weight:500">(optional)</span></label>
+          <input type="text" id="assign-officer" value="${c.officer||''}" placeholder="Officer name">
+        </div>
+        <button class="btn btn-primary btn-sm" style="width:100%" onclick="assignComplaint('${c.id}')">Save Assignment</button>
+      </div>
+      <div class="card dt-section">
+        <h4>Update Status</h4>
+        <div class="field"><label>Status</label>
+          <select id="status-select">${STATUS_FLOW.map(s=>`<option ${c.status===s?'selected':''}>${s}</option>`).join('')}</select>
+        </div>
+        <button class="btn btn-teal btn-sm" style="width:100%" onclick="updateStatus('${c.id}')">Update Status</button>
+      </div>
+      <div class="card dt-section" id="resolve-panel" style="${c.status==='Resolved'||c.status==='Closed' ? 'display:none':''}">
+        <h4>Mark as Resolved</h4>
+        <div class="field"><label>Resolution Details</label><textarea id="resolve-desc" placeholder="Describe the action taken..."></textarea></div>
+        <div class="field"><label>Resolution Proof <span style="color:var(--gray-400);font-weight:500">(optional)</span></label>
+          <input type="file" id="resolve-file" accept="image/*" onchange="previewResolveImg(event)">
+          <img id="resolve-preview" style="display:none;margin-top:10px;border-radius:10px;max-height:140px;width:100%;object-fit:cover">
+        </div>
+        <button class="btn btn-primary btn-sm" style="width:100%" onclick="markResolved('${c.id}')">Submit Resolution</button>
+      </div>
+    </div>
+  </div>`;
+}
+let _resolveImg = null;
+function previewResolveImg(e){
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{ _resolveImg=ev.target.result; const img=document.getElementById('resolve-preview'); img.src=ev.target.result; img.style.display='block'; };
+  r.readAsDataURL(f);
+}
+function assignComplaint(id){
+  const list = loadComplaints(); const c = list.find(x=>x.id===id); if(!c) return;
+  const dept = document.getElementById('assign-dept').value;
+  const officer = document.getElementById('assign-officer').value.trim();
+  if(!dept){ toast('Please select a department first.', '⚠️'); return; }
+  c.department = dept; c.officer = officer;
+  if(c.status==='Reported'||c.status==='Verified'){
+    c.status='Assigned';
+    c.timeline.push({status:'Assigned', date:new Date().toISOString(), note:`Assigned to ${dept}.`});
+  }
+  saveComplaints(list);
+  toast('Complaint assigned successfully.', '📌');
+  renderDetails(id);
+}
+function updateStatus(id){
+  const list = loadComplaints(); const c = list.find(x=>x.id===id); if(!c) return;
+  const newStatus = document.getElementById('status-select').value;
+  if(newStatus===c.status){ toast('Status is already set to '+newStatus+'.', 'ℹ️'); return; }
+  c.status = newStatus;
+  if(!c.timeline.find(t=>t.status===newStatus)){
+    c.timeline.push({status:newStatus, date:new Date().toISOString(), note:`Status updated to ${newStatus} by authority.`});
+  }
+  saveComplaints(list);
+  toast('Complaint status updated to '+newStatus+'.', '🔄');
+  renderDetails(id);
+}
+function markResolved(id){
+  const list = loadComplaints(); const c = list.find(x=>x.id===id); if(!c) return;
+  const desc = document.getElementById('resolve-desc').value.trim();
+  if(!desc){ toast('Please describe the action taken.', '⚠️'); return; }
+  const now = new Date().toISOString();
+  c.resolution = { desc, image:_resolveImg, date: now };
+  c.status = 'Resolved';
+  if(!c.timeline.find(t=>t.status==='Resolved')) c.timeline.push({status:'Resolved', date: now, note:'Issue resolved successfully.'});
+  saveComplaints(list);
+  _resolveImg = null;
+  toast('Issue resolved successfully.', '✅');
+  renderDetails(id);
+}
+
+/* ================= INIT ================= */
+handleRoute();
+</script>
+</body>
+</html>
